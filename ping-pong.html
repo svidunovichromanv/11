@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ping-pong</title>
+    <style>
+        #field{
+            width: 500px;
+            height: 200px;
+            background-color: #f0ee7e;
+            position: absolute;
+            z-index: 0;
+            border: 1px black solid;
+        }
+        #player1{
+            width: 5px;
+            height: 50px;
+            background-color: #09aa57;
+            position: absolute;
+            z-index: 2;
+            top:75px;
+        }
+        #player2{
+            right: 0;
+            width: 5px;
+            height: 50px;
+            background-color: #191497;
+            position: absolute;
+            z-index: 2;
+            top:75px;
+        }
+        #ball{
+            width: 10px;
+            height: 10px;
+            background-color: #f02137;
+            position: absolute;
+            z-index: 2;
+            border-radius: 100%;
+            top:95px;
+            visibility: hidden;
+        }
+        span{
+            margin-left: 180px;
+            font-size: 1.5em;
+        }
+        button{
+            border: 0;
+            color: #2b2a29;
+            background-color: #d9d9d3;
+            border-radius: 0;
+        }
+    </style>
+</head>
+<body>
+    <button>старт!</button>
+    <span id="score">0:0</span>
+    <div id="field">
+        <div id="player1"></div>
+        <div id="player2"></div>
+        <div id="ball"></div>
+    </div>
+<script>
+    const mBall = {
+        posx:245,
+        sidex:0,
+        posy:95,
+        sidey:0,
+        move:0
+    };
+    const mPlayer1 ={
+        posy:75,
+        pressSh:0,
+        pressCtrl:0
+    };
+    const mPlayer2 ={
+        posy:75,
+        pressUp:0,
+        pressDown:0
+    };
+    const scoreCounter = {
+        player1:0,
+        player2:0
+    };
+    const score = document.getElementById("score");
+    const start = document.body.getElementsByTagName("button")[0];
+    const ball = document.getElementById("ball");
+    const player1 = document.getElementById("player1");
+    const player2 = document.getElementById("player2");
+    document.body.addEventListener('click', (e)=>{
+
+        if(e.target===start && mBall.move===0){
+            let yball = Math.floor(Math.random()*(2-0.7+1))+0.7;
+            mBall.sidex=Math.round(Math.random());
+            ball.style.visibility = 'visible';
+            requestAnimationFrame(function moveBall(){
+                if(mBall.posy<190 && mBall.sidey===0){
+                    mBall.posy += yball;
+                    ball.style.top = mBall.posy +"px";
+                }else{
+                    if (mBall.posy<=0){
+                        mBall.sidey=0;
+                    } else{
+                        mBall.sidey=1;
+                    }
+                    mBall.posy -= yball;//+time/3000;
+                    ball.style.top = mBall.posy +"px";
+                }
+
+
+                if (mBall.posx<=485 && mBall.sidex===0){
+                    mBall.posx += 4;//+time/3000;
+                    ball.style.left = mBall.posx +"px";
+                    if(mBall.posx>=485){
+                        if((mPlayer2.posy-4)<=(mBall.posy-5) && (mBall.posy-5)<=(mPlayer2.posy+54)){
+                        requestAnimationFrame(moveBall);
+                        }else{
+                            ball.style.visibility = 'hidden';
+                            mBall.posy=95;
+                            mBall.posx=245;
+                            scoreCounter.player1+=1;
+                            score.innerHTML=`${scoreCounter.player1}:${scoreCounter.player2}`;
+                            mBall.move=0;
+                        }
+                    }else{
+                        requestAnimationFrame(moveBall);
+                    }
+
+                }else {
+                    if (mBall.posx<=5){
+                        mBall.sidex=0;
+                    } else{
+                        mBall.sidex=1;
+                    }
+                    mBall.posx -= 4;//+time/3000;
+                    ball.style.left = mBall.posx +"px";
+                    if(mBall.posx<=5) {
+                        if((mPlayer1.posy-4)<=(mBall.posy-5) && (mBall.posy-5)<=(mPlayer1.posy+54)){
+                        requestAnimationFrame(moveBall);
+                        }else {
+                            ball.style.visibility = 'hidden';
+                            mBall.posy=95;
+                            mBall.posx=245;
+                            scoreCounter.player2+=1;
+                            score.innerHTML=`${scoreCounter.player1}:${scoreCounter.player2}`;
+                            mBall.move=0;
+                        }
+                    }else{
+                        requestAnimationFrame(moveBall);
+                    }
+                }
+            });
+        }
+        mBall.move=1;
+    });
+    document.addEventListener('keydown', (e) => {
+        if(e.keyCode===16){
+            mPlayer1.pressSh=1;
+            window.requestAnimationFrame(function moveUpPlayer1(){
+                if(mPlayer1.posy>=1 && mPlayer1.pressSh===1){
+                    mPlayer1.posy-=2;
+                    player1.style.top=mPlayer1.posy+'px';
+                    requestAnimationFrame(moveUpPlayer1);
+                }
+            });
+        }
+        if(e.keyCode===17){
+            mPlayer1.pressCtrl=1;
+            window.requestAnimationFrame(function moveDownPlayer1(){
+                if(mPlayer1.posy<=148.5 && mPlayer1.pressCtrl===1){
+                    mPlayer1.posy+=2;
+                    player1.style.top=mPlayer1.posy+'px';
+                    requestAnimationFrame(moveDownPlayer1);
+                }
+            });
+        }
+        if(e.keyCode===38){
+            mPlayer2.pressUp=1;
+            window.requestAnimationFrame(function moveUpPlayer2(){
+                if(mPlayer2.posy>=1 && mPlayer2.pressUp===1){
+                    mPlayer2.posy-=2;
+                    player2.style.top=mPlayer2.posy+'px';
+                    requestAnimationFrame(moveUpPlayer2);
+                }
+            });
+        }
+        if(e.keyCode===40){
+            mPlayer2.pressDown=1;
+            window.requestAnimationFrame(function moveDownPlayer2(){
+                if(mPlayer2.posy<=148.5 && mPlayer2.pressDown===1){
+                    mPlayer2.posy+=2;
+                    player2.style.top=mPlayer2.posy+'px';
+                    requestAnimationFrame(moveDownPlayer2);
+                }
+            });
+        }
+    });
+    document.addEventListener('keyup', (e) => {
+        if(e.keyCode===16){
+            mPlayer1.pressSh=0;
+        }
+        if(e.keyCode===17){
+            mPlayer1.pressCtrl=0;
+        }
+        if(e.keyCode===38){
+            mPlayer2.pressUp=0;
+        }
+        if(e.keyCode===40){
+            mPlayer2.pressDown=0;
+        }
+    });
+</script>
+</body>
+</html>
