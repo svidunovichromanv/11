@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>balls</title>
+</head>
+<body>
+Мячиков: <input type=text id=BC value=10>
+<input type=button value='Добавить' onclick='add()'>
+<button>замена</button>
+<div id=IField style='position: relative;
+    border: solid red 1px; width: 400px; height: 400px'>
+</div>
+
+<script>
+
+    "use strict";
+    const butt = document.getElementsByTagName("button")[0];
+    function add() {
+        var field=document.getElementById('IField');
+        var ballsCount=document.getElementById('BC').value;
+        for ( var b=0; b<ballsCount; b++ ) {
+            var ball=document.createElement('img');
+            ball.src='BasketBall.png';
+            ball.style.width=100+"px";
+            ball.style.height=100+"px";
+            ball.style.position='absolute';
+            ball.style.left=Math.floor(Math.random()*300)+"px";
+            ball.style.top=Math.floor(Math.random()*300)+"px";
+            field.appendChild(ball);
+        }
+    }
+    document.body.addEventListener("click",(e)=>{
+        if(e.target===butt){
+            const elements = document.querySelectorAll("img");
+            const elements1 = document.querySelectorAll(".q");
+
+            for (let i = 0; i < elements.length; i++) {
+                changeOne(elements[i]);
+            }
+
+            for (let i = 0; i < elements1.length; i++) {
+                changeOne1(elements1[i]);
+            }
+        }
+        if(e.target.tagName==="IMG"){
+            changeOne(e.target);
+        }
+
+    });
+    function changeOne1(element) {
+        let ball=document.createElement('img');
+        let pos = element.getBoundingClientRect();
+        const field=document.getElementById('IField');
+        ball.src='BasketBall.png';
+        ball.style.width=100+"px";
+        ball.style.height=100+"px";
+        ball.style.position='fixed';
+        ball.style.left=pos.x + "px";
+        ball.style.top=pos.y+"px";
+        field.appendChild(ball);
+        element.parentNode.removeChild(element);
+    }
+    const divs = document.createElement("div");
+    function changeOne(element) {
+        const field=document.getElementById('IField');
+        let pos = element.getBoundingClientRect();
+        const div = divs.cloneNode();
+        div.style.position="fixed";
+        div.className="q";
+        div.style.width=100+"px";
+        div.style.height=100+"px";
+        div.style.backgroundColor="red";
+        div.style.border="3px green solid";
+        div.style.left=pos.x + "px";
+        div.style.top=pos.y+"px";
+        field.appendChild(div);
+        element.parentNode.removeChild(element);
+    }
+
+</script>
+</body>
+</html>
