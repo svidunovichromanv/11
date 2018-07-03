@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>x</title>
+</head>
+
+<body ondragstart="dragstart(event)"
+      ondrag="dragTo(event)"
+      ondragend="dragEnd(event)"
+      ondrop="divDrop(event)"
+      >
+<div style='border:solid red 1px;width:150px;height:150px'
+     ondragover="divDragOver(event)"
+     ondragleave="divDragLive(event)">
+</div>
+<br>
+<div style='border:solid blue 1px;width:150px;height:150px'
+     ondragover="divDragOver(event)"
+     ondragleave="divDragLive(event)">
+</div>
+<br>
+Этот текст не может быть перемещен в контейнер
+<img id=BALL src="http://fe.it-academy.by/Examples/ball3.png">
+<img id=BALL2 src="http://fe.it-academy.by/Examples/ball3.png">
+<script>
+
+    "use strict";
+    let dragElem = {};
+    let dragStartPos={};
+    let mouseStartPos={};
+    let clone = {};
+    function dragstart(e) {
+        if (e.target.nodeName === "IMG" && e.target.id.indexOf("BALL") === 0) {
+            // позволяем перемещать только мячики
+            dragElem = e.target;
+            dragStartPos = dragElem.getBoundingClientRect();
+            mouseStartPos.xStart = e.pageX;
+            mouseStartPos.yStart = e.pageY;
+            dragElem.style.zIndex=1000;
+            clone = dragElem.cloneNode(true);
+            clone.style.zIndex=0;
+            clone.style.position="fixed";
+            document.body.appendChild(clone);
+            dragElem.style.opacity = 0;
+        }
+    }
+    function dragTo(e) {
+        e.preventDefault();
+        if (clone) {
+            clone.style.left = dragStartPos.left + e.pageX - mouseStartPos.xStart + "px";
+            clone.style.top = dragStartPos.top + e.pageY - mouseStartPos.yStart + "px";
+        }
+    }
+    function dragEnd(e) {
+        dragElem.style.opacity = 1;
+        dragElem = null;
+        clone.parentNode.removeChild(clone);
+        clone=null;
+    }
+
+    function divDragOver(e) {
+        // по-умолчанию drag & drop отключем для всех элементов
+        // если не вызывать e.preventDefault, то событие drop не наступает вообще
+        e.preventDefault();
+        if (e.target.nodeName === "DIV"){
+            e.target.style.borderStyle="dashed";
+        }
+
+    }
+
+    function divDragLive(e) {
+        e.preventDefault();
+        if (e.target.nodeName === "DIV") {
+            e.target.style.borderStyle = "solid";
+        }
+    }
+
+    function divDrop(e) {
+        // отмена стандартного действия при перемещении элемента в окно браузера
+        e.preventDefault();
+        // this, e.target и e.currentTarget указывают на див, в который роняем мяч
+        // нужно использовать значение переменной dragElem, которая захватывает
+        // ссылку на перемещаемый элемент на этапе dragstart
+        if (!dragElem) return;
+        // appendChild отцепляет элемент DOM от его исходного родителя в DOM
+        // если такой есть автоматически
+        e.currentTarget.appendChild(dragElem);
+        if (e.currentTarget.nodeName === "DIV") {
+            e.currentTarget.style.borderStyle = 'solid';
+        }
+        dragElem.style.opacity = 1;
+        clone.parentNode.removeChild(clone);
+        clone=null;
+        dragElem = null; // переместили
+    }
+
+</script>
+</body>
+</html>
